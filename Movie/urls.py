@@ -38,5 +38,7 @@ urlpatterns = [
     path('search/', SearchView.as_view(), name='search'),
     path('logout/', Logout.as_view(), name='logout'),
     path('',Homepage.as_view()),
+    path('userdetails/<int:pk>',userdetails.as_view(),name='userdetails'),
+    path('admindetails/<int:pk>',admindetails.as_view(),name='admindetails'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

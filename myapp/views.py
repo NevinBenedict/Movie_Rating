@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
-from django.views.generic import View
+from django.views.generic import View,DetailView
 from myapp.models import *
 from myapp.forms import *
 from django.contrib.auth import authenticate, login, logout 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg,Q
+from django.db.models import Avg,Q,Count
 from django.contrib import messages
 
 
@@ -75,10 +75,10 @@ class MovieAddView(View):
             return redirect('movielist')
         return redirect('login')
 
-# @method_decorator(decorator=is_super_user, name="dispatch")
+
 class MovieListView(View):
     def get(self, request):
-        # Annotate the Movie queryset with the average rating
+    
         data = Movie.objects.annotate(average_rating=Avg('review__rating')).order_by('-average_rating')
 
         return render(request, 'movielist.html', {'data': data})
@@ -164,7 +164,7 @@ class ReviewListView(View):
         id = kwargs.get("pk")
         moviedata = Movie.objects.get(id=id)
         data = Review.objects.filter(movie=moviedata)
-        average = data.aggregate(average=Avg("rating"))  # Correctly calculate the average rating
+        average = data.aggregate(average=Avg("rating")) 
 
         return render(request, "reviewlist.html", {"data": data, "id": id, "average": average ,"moviedata":moviedata})
 
@@ -208,6 +208,27 @@ class SearchView(View):
             data = Movie.objects.annotate(average_rating=Avg('review__rating')).order_by('-average_rating')
 
         return render(request, 'movielist.html', {'data': data})
+    
+
+class userdetails(View):
+    def get(self, request, **kwargs):
+            id = kwargs.get('pk')
+            if request.user.id==id and not request.user.is_superuser:
+                num=Review.objects.filter(user=request.user).count()
+                data = User.objects.get(id=id)
+                return render(request, 'userdetails.html', {'data': data ,"count":num})
+            return redirect("login")
+       
+
+@method_decorator(decorator=is_super_user, name="dispatch")
+class admindetails(View):
+
+    def get(self, request, **kwargs):
+        id = kwargs.get('pk')
+        all = User.objects.get(id=id)
+        data= User.objects.annotate(review_count=Count('review'))
+        
+        return render(request, 'admindetails.html', {'users': data ,"all":all})
 
 class Logout(View):
     def get(self, request):

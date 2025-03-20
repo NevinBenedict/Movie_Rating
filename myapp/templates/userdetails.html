@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}User Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg border-0 mx-auto my-5" style="max-width: 700px;">
+        <div class="card-body text-center ">
+            <!-- User Profile Image -->
+         
+
+            <h2 class="fw-bold text-dark">{{ user.username }}</h2>
+            <p class="text-muted mb-1">First Name: {{ user.first_name }}</p>
+            <p class="text-muted mb-1">Last Name: {{ user.Last_name }}</p>
+            <p class="text-muted mb-1">Email: {{ user.email }}</p>
+
+
+            <!-- User Role Badge -->
+        <hr>
+            <!-- User Bio -->
+
+            <div class="mt-3">
+            <p class="fw-bold">Total Reviews: <a href="{%url 'reviewuserlist' request.user.id %}"><span class="badge bg-secondary">{{ count }}</span></a></p>
+            </div>
+
+            <!-- Edit Profile Button -->
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+
+</div>
+{% endblock %}
